@@ -1,5 +1,4 @@
 package: github.com/redsift/go-mangosock
 import:
-- package: github.com/redsift/go-socket
 - package: github.com/go-mangos/mangos
-  version: 2bb32b72ecb923a3055d2994b21f7ba4e7ec13a2
+  version: e5e6478f44cda1eb8427b590755270e2704a990d
