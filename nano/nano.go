@@ -1,8 +1,8 @@
-package mangosock
+package nano
 
 import "time"
 
-type socket interface {
+type Socket interface {
 	Bind(addr string) error
 	Connect(addr string) error
 	SetSendTimeout(timeout time.Duration) error
@@ -14,21 +14,21 @@ type socket interface {
 }
 
 type Rep interface {
-	socket
+	Socket
 	Address() string
 }
 
 type Req interface {
-	socket
+	Socket
 	SetResendInterval(timeout time.Duration) error
 }
 
 type Sub interface {
-	socket
+	Socket
 	Subscribe([]byte) error
 }
 
 type Pub interface {
-	socket
+	Socket
 	Publish([]byte) (int, error)
 }

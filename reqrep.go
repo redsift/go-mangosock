@@ -6,18 +6,19 @@ import (
 	"github.com/go-mangos/mangos"
 	"github.com/go-mangos/mangos/protocol/rep"
 	"github.com/go-mangos/mangos/protocol/req"
+	"github.com/redsift/go-mangosock/nano"
 )
 
 // ensure we implement interfaces correctly
 var (
-	_ Req = &reqsock{}
+	_ nano.Req = &reqsock{}
 )
 
 type reqsock struct {
 	s
 }
 
-func NewReqSocket() (Req, error) {
+func NewReqSocket() (nano.Req, error) {
 	sock, err := req.NewSocket()
 	if err != nil {
 		return nil, err
@@ -37,14 +38,14 @@ func (s *reqsock) SetResendInterval(interval time.Duration) error {
 
 // ensure we implement interfaces correctly
 var (
-	_ Rep = &repsock{}
+	_ nano.Rep = &repsock{}
 )
 
 type repsock struct {
 	s
 }
 
-func NewRepSocket() (Rep, error) {
+func NewRepSocket() (nano.Rep, error) {
 	sock, err := rep.NewSocket()
 	if err != nil {
 		return nil, err

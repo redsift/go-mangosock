@@ -7,7 +7,10 @@ import (
 	"github.com/go-mangos/mangos"
 	"github.com/go-mangos/mangos/transport/ipc"
 	"github.com/go-mangos/mangos/transport/tcp"
+	"github.com/redsift/go-mangosock/nano"
 )
+
+var _ nano.Socket = &s{}
 
 type s struct {
 	sock mangos.Socket

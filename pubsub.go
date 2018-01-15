@@ -4,18 +4,19 @@ import (
 	"github.com/go-mangos/mangos"
 	"github.com/go-mangos/mangos/protocol/pub"
 	"github.com/go-mangos/mangos/protocol/sub"
+	"github.com/redsift/go-mangosock/nano"
 )
 
 // ensure we implement interfaces correctly
 var (
-	_ Pub = &pubsock{}
+	_ nano.Pub = &pubsock{}
 )
 
 type pubsock struct {
 	s
 }
 
-func NewPubSocket() (Pub, error) {
+func NewPubSocket() (nano.Pub, error) {
 	sock, err := pub.NewSocket()
 	if err != nil {
 		return nil, err
@@ -35,14 +36,14 @@ func (s *pubsock) Publish(data []byte) (int, error) {
 
 // ensure we implement interfaces correctly
 var (
-	_ Sub = &subsock{}
+	_ nano.Sub = &subsock{}
 )
 
 type subsock struct {
 	s
 }
 
-func NewSubSocket() (Sub, error) {
+func NewSubSocket() (nano.Sub, error) {
 	sock, err := sub.NewSocket()
 	if err != nil {
 		return nil, err
