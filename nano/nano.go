@@ -25,7 +25,8 @@ type Req interface {
 
 type Sub interface {
 	Socket
-	Subscribe([]byte) error
+	Subscribe(string) error
+	Unsubscribe(string) error
 }
 
 type Pub interface {

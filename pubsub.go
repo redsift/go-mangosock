@@ -57,6 +57,10 @@ func NewSubSocket() (nano.Sub, error) {
 	return &subsock{s: s{sock: sock}}, nil
 }
 
-func (s *subsock) Subscribe(topic []byte) error {
+func (s *subsock) Subscribe(topic string) error {
 	return s.sock.SetOption(mangos.OptionSubscribe, topic)
+}
+
+func (s *subsock) Unsubscribe(topic string) error {
+	return s.sock.SetOption(mangos.OptionUnsubscribe, topic)
 }
