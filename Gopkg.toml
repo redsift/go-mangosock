@@ -1,0 +1,5 @@
+# go-mangosock
+
+[[constraint]]
+  name = "github.com/go-mangos/mangos"
+  revision = "e5e6478f44cda1eb8427b590755270e2704a990d"
