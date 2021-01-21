@@ -22,14 +22,3 @@ type Req interface {
 	Socket
 	SetResendInterval(timeout time.Duration) error
 }
-
-type Sub interface {
-	Socket
-	Subscribe(string) error
-	Unsubscribe(string) error
-}
-
-type Pub interface {
-	Socket
-	Publish([]byte) (int, error)
-}
