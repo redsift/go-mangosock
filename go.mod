@@ -1,6 +1,6 @@
 module github.com/redsift/go-mangosock
 
-go 1.13
+go 1.16
 
 require (
 	github.com/Microsoft/go-winio v0.4.15 // indirect
