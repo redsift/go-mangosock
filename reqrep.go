@@ -3,10 +3,10 @@ package mangosock
 import (
 	"time"
 
-	"nanomsg.org/go-mangos"
-	"nanomsg.org/go-mangos/protocol/rep"
-	"nanomsg.org/go-mangos/protocol/req"
 	"github.com/redsift/go-mangosock/nano"
+	"go.nanomsg.org/mangos/v3"
+	"go.nanomsg.org/mangos/v3/protocol/rep"
+	"go.nanomsg.org/mangos/v3/protocol/req"
 )
 
 // ensure we implement interfaces correctly
