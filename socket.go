@@ -1,13 +1,13 @@
 package mangosock
 
 import (
-	"strings"
 	"time"
 
-	"nanomsg.org/go-mangos"
-	"nanomsg.org/go-mangos/transport/ipc"
-	"nanomsg.org/go-mangos/transport/tcp"
 	"github.com/redsift/go-mangosock/nano"
+	"go.nanomsg.org/mangos/v3"
+	"go.nanomsg.org/mangos/v3/transport"
+	"go.nanomsg.org/mangos/v3/transport/ipc"
+	"go.nanomsg.org/mangos/v3/transport/tcp"
 )
 
 var _ nano.Socket = &s{}
@@ -17,24 +17,18 @@ type s struct {
 	addr string
 }
 
-func (s *s) addTransport(addr string) {
-	if strings.HasPrefix(addr, "ipc://") {
-		s.sock.AddTransport(ipc.NewTransport())
-	}
-	if strings.HasPrefix(addr, "tcp://") {
-		s.sock.AddTransport(tcp.NewTransport())
-	}
+func init() {
+	transport.RegisterTransport(ipc.Transport)
+	transport.RegisterTransport(tcp.Transport)
 }
 
 func (s *s) Bind(addr string) error {
 	s.addr = addr
-	s.addTransport(addr)
 	return s.sock.Listen(addr)
 }
 
 func (s *s) Connect(addr string) error {
 	s.addr = addr
-	s.addTransport(addr)
 	return s.sock.Dial(addr)
 }
 

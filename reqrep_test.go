@@ -2,7 +2,6 @@ package mangosock
 
 import (
 	"crypto/rand"
-	"fmt"
 	"os"
 	"strconv"
 	"sync"
@@ -14,38 +13,46 @@ import (
 
 const count = 1
 
-func testRep(wg *sync.WaitGroup) {
+func testRep(t *testing.T, ready, wg *sync.WaitGroup, path string) {
 	defer wg.Done()
+	readyNow := sync.OnceFunc(ready.Done)
+	defer readyNow()
+
+	t.Logf("testRep(%q)", path)
 
 	var err error
 	var s nano.Rep
 	if s, err = NewRepSocket(); err != nil {
-		fmt.Println("NewRepSocket error: ", err)
-		os.Exit(1)
+		t.Errorf("NewRepSocket error: %v", err)
+		return
 	}
-	if err = s.Bind("ipc:///tmp/nano1.sock"); err != nil {
-		fmt.Println("Bind error: ", err)
-		os.Exit(1)
+	if err = s.Bind("ipc://" + path + "/nano1.sock"); err != nil {
+		t.Errorf("Bind error: %v", err)
+		return
 	}
+
+	t.Logf("testRep(%q) ready", path)
+	readyNow()
 
 	i := 0
 	for {
+		t.Logf("testRep.for(i=%d)", i)
 		rsp, err := s.Recv()
 		if err != nil {
-			fmt.Println("Recv error: ", err)
-			os.Exit(1)
+			t.Errorf("Recv error: %v", err)
+			return
 		}
 
-		//fmt.Println("Received: ", string(rsp))
-		fmt.Println("Received: ", len(rsp))
+		//t.Log("Received: ", string(rsp))
+		t.Logf("Received: %d", len(rsp))
 
 		_, err = s.Send([]byte("bye " + strconv.Itoa(i)))
 		if err != nil {
-			fmt.Println("Error sending request:", err)
-			os.Exit(1)
+			t.Errorf("Error sending request: %v", err)
+			return
 		}
 
-		fmt.Println("Sent response to req socket")
+		t.Log("Sent response to req socket")
 
 		i += 1
 		if i >= count {
@@ -56,34 +63,45 @@ func testRep(wg *sync.WaitGroup) {
 
 func TestReqRep(t *testing.T) {
 	st := time.Now()
-	var wg sync.WaitGroup
+	var wg, ready sync.WaitGroup
 	wg.Add(1)
-	go testRep(&wg)
+	ready.Add(1)
+
+	path := t.TempDir()
+
+	go testRep(t, &ready, &wg, path)
 
 	newSock := func() nano.Req {
 		var err error
 		var s nano.Req
+
+		t.Logf("newSock(%q)", path)
+
 		if s, err = NewReqSocket(); err != nil {
-			fmt.Println("NewReqSocket error: ", err)
+			t.Log("NewReqSocket error: ", err)
 			os.Exit(1)
 		}
 
 		_ = s.SetSendTimeout(2 * time.Second)
 		_ = s.SetRecvTimeout(2 * time.Second)
 
-		err = s.Connect("ipc:///tmp/nano1.sock")
+		t.Logf("newSock(%q) -> connect", path)
+
+		err = s.Connect("ipc://" + path + "/nano1.sock")
 		if err != nil {
-			fmt.Println("Error connecting socket:", err)
+			t.Log("Error connecting socket:", err)
 		}
 
-		fmt.Println("Connected to req socket")
+		t.Log("Connected to req socket")
 
 		return s
 	}
 
+	ready.Wait()
+
 	s := newSock()
 	//t1, _ := s.RecvTimeout()
-	//fmt.Println("RecvTimeout=", t1)
+	//t.Log("RecvTimeout=", t1)
 
 	token := make([]byte, 4*1024*1024)
 	rand.Read(token)
@@ -92,29 +110,29 @@ func TestReqRep(t *testing.T) {
 		//_, err := s.Send([]byte("hello " + strconv.Itoa(i)))
 		_, err := s.Send(token)
 
-		//fmt.Println("Send err:", err, err == syscall.ETIMEDOUT)
+		//t.Log("Send err:", err, err == syscall.ETIMEDOUT)
 		if err != nil {
-			fmt.Println("Error sending request:", err)
+			t.Log("Error sending request:", err)
 		}
 
-		fmt.Println("Sent request")
+		t.Log("Sent request")
 
 		rsp, err := s.Recv()
-		//fmt.Println("Received err:", err, err == syscall.ETIMEDOUT)
+		//t.Log("Received err:", err, err == syscall.ETIMEDOUT)
 		if err != nil {
-			fmt.Println("Error receiving response:", err)
+			t.Log("Error receiving response:", err)
 			/*err = s.Close()
 			s = newSock()
 			if err != nil {
-				fmt.Println("Error closing socket:", err)
+				t.Log("Error closing socket:", err)
 			}*/
 		} else {
-			fmt.Println("Received: ", string(rsp))
+			t.Log("Received: ", string(rsp))
 		}
 	}
 
 	wg.Wait()
 
-	fmt.Println("Time:", time.Since(st))
-	fmt.Println("dummy log")
+	t.Log("Time:", time.Since(st))
+	t.Log("dummy log")
 }

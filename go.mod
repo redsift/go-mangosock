@@ -1,10 +1,10 @@
 module github.com/redsift/go-mangosock
 
-go 1.16
+go 1.21
+
+require go.nanomsg.org/mangos/v3 v3.4.2
 
 require (
-	github.com/Microsoft/go-winio v0.4.15 // indirect
-	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/smartystreets/goconvey v1.6.4 // indirect
-	nanomsg.org/go-mangos v1.4.0
+	github.com/Microsoft/go-winio v0.5.2 // indirect
+	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 )
